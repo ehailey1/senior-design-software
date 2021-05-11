@@ -16,13 +16,13 @@
 		reg = <0x80000000 0x20000000>;
 	};
 
-	backlight_display: backlight-display {
-		compatible = "pwm-backlight";
-		pwms = <&pwm1 0 5000000>;
-		brightness-levels = <0 4 8 16 32 64 128 255>;
-		default-brightness-level = <6>;
-		status = "okay";
-	};
+	// backlight_display: backlight-display {
+	// 	compatible = "pwm-backlight";
+	// 	pwms = <&pwm1 0 5000000>;
+	// 	brightness-levels = <0 4 8 16 32 64 128 255>;
+	// 	default-brightness-level = <6>;
+	// 	status = "okay";
+	// };
 
 
 	reg_sd1_vmmc: regulator-sd1-vmmc {
@@ -34,46 +34,42 @@
 		enable-active-high;
 	};
 
-	reg_can_3v3: regulator-can-3v3 {
-		compatible = "regulator-fixed";
-		regulator-name = "can-3v3";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		gpios = <&gpio_spi 3 GPIO_ACTIVE_LOW>;
-	};
+
 
 	spi4 {
 		compatible = "spi-gpio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_spi4>;
 		status = "okay";
-		gpio-sck = <&gpio5 11 0>;
-		gpio-mosi = <&gpio5 10 0>;
-		cs-gpios = <&gpio5 7 0>;
+		pinctrl-assert-gpios = <&gpio2 8 GPIO_ACTIVE_LOW>;
+		gpio-sck = <&gpio2 13 0>;
+		gpio-mosi = <&gpio2 14 0>;
+		cs-gpios = <&gpio2 15 0>;
 		num-chipselects = <1>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		gpio_spi: gpio@0 {
-			compatible = "fairchild,74hc595";
-			gpio-controller;
-			#gpio-cells = <2>;
+		display@0{
+			compatible = "adafruit,yx240qv29", "ilitek,ili9341";
 			reg = <0>;
-			registers-number = <1>;
-			spi-max-frequency = <100000>;
+			spi-max-frequency = <32000000>;
+			dc-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
+			reset-gpios = <&gpio1 5 GPIO_ACTIVE_HIGH>;
+			rotation = <270>;
+			// backlight = <&backlight>;
 		};
 	};
 
-	panel {
-		compatible = "innolux,at043tn24";
-		backlight = <&backlight_display>;
+	// panel {
+	// 	compatible = "innolux,at043tn24";
+	// 	backlight = <&backlight_display>;
 
-		port {
-			panel_in: endpoint {
-				remote-endpoint = <&display_out>;
-			};
-		};
-	};
+	// 	port {
+	// 		panel_in: endpoint {
+	// 			remote-endpoint = <&display_out>;
+	// 		};
+	// 	};
+	// };
 };
 
 &clks {
@@ -159,20 +155,20 @@
 	};
 };
 
-&lcdif {
-	assigned-clocks = <&clks IMX6UL_CLK_LCDIF_PRE_SEL>;
-	assigned-clock-parents = <&clks IMX6UL_CLK_PLL5_VIDEO_DIV>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_lcdif_dat
-		     &pinctrl_lcdif_ctrl>;
-	status = "okay";
+// &lcdif {
+// 	assigned-clocks = <&clks IMX6UL_CLK_LCDIF_PRE_SEL>;
+// 	assigned-clock-parents = <&clks IMX6UL_CLK_PLL5_VIDEO_DIV>;
+// 	pinctrl-names = "default";
+// 	pinctrl-0 = <&pinctrl_lcdif_dat
+// 		     &pinctrl_lcdif_ctrl>;
+// 	status = "okay";
 
-	port {
-		display_out: endpoint {
-			remote-endpoint = <&panel_in>;
-		};
-	};
-};
+// 	port {
+// 		display_out: endpoint {
+// 			remote-endpoint = <&panel_in>;
+// 		};
+// 	};
+// };
 
 &pwm1 {
 	pinctrl-names = "default";
@@ -363,45 +359,45 @@
 		>;
 	};
 
-	pinctrl_lcdif_dat: lcdifdatgrp {
-		fsl,pins = <
-			MX6UL_PAD_LCD_DATA00__LCDIF_DATA00  0x79
-			MX6UL_PAD_LCD_DATA01__LCDIF_DATA01  0x79
-			MX6UL_PAD_LCD_DATA02__LCDIF_DATA02  0x79
-			MX6UL_PAD_LCD_DATA03__LCDIF_DATA03  0x79
-			MX6UL_PAD_LCD_DATA04__LCDIF_DATA04  0x79
-			MX6UL_PAD_LCD_DATA05__LCDIF_DATA05  0x79
-			MX6UL_PAD_LCD_DATA06__LCDIF_DATA06  0x79
-			MX6UL_PAD_LCD_DATA07__LCDIF_DATA07  0x79
-			MX6UL_PAD_LCD_DATA08__LCDIF_DATA08  0x79
-			MX6UL_PAD_LCD_DATA09__LCDIF_DATA09  0x79
-			MX6UL_PAD_LCD_DATA10__LCDIF_DATA10  0x79
-			MX6UL_PAD_LCD_DATA11__LCDIF_DATA11  0x79
-			MX6UL_PAD_LCD_DATA12__LCDIF_DATA12  0x79
-			MX6UL_PAD_LCD_DATA13__LCDIF_DATA13  0x79
-			MX6UL_PAD_LCD_DATA14__LCDIF_DATA14  0x79
-			MX6UL_PAD_LCD_DATA15__LCDIF_DATA15  0x79
-			MX6UL_PAD_LCD_DATA16__LCDIF_DATA16  0x79
-			MX6UL_PAD_LCD_DATA17__LCDIF_DATA17  0x79
-			MX6UL_PAD_LCD_DATA18__LCDIF_DATA18  0x79
-			MX6UL_PAD_LCD_DATA19__LCDIF_DATA19  0x79
-			MX6UL_PAD_LCD_DATA20__LCDIF_DATA20  0x79
-			MX6UL_PAD_LCD_DATA21__LCDIF_DATA21  0x79
-			MX6UL_PAD_LCD_DATA22__LCDIF_DATA22  0x79
-			MX6UL_PAD_LCD_DATA23__LCDIF_DATA23  0x79
-		>;
-	};
+	// pinctrl_lcdif_dat: lcdifdatgrp {
+	// 	fsl,pins = <
+	// 		MX6UL_PAD_LCD_DATA00__LCDIF_DATA00  0x79
+	// 		MX6UL_PAD_LCD_DATA01__LCDIF_DATA01  0x79
+	// 		MX6UL_PAD_LCD_DATA02__LCDIF_DATA02  0x79
+	// 		MX6UL_PAD_LCD_DATA03__LCDIF_DATA03  0x79
+	// 		MX6UL_PAD_LCD_DATA04__LCDIF_DATA04  0x79
+	// 		MX6UL_PAD_LCD_DATA05__LCDIF_DATA05  0x79
+	// 		MX6UL_PAD_LCD_DATA06__LCDIF_DATA06  0x79
+	// 		MX6UL_PAD_LCD_DATA07__LCDIF_DATA07  0x79
+	// 		MX6UL_PAD_LCD_DATA08__LCDIF_DATA08  0x79
+	// 		MX6UL_PAD_LCD_DATA09__LCDIF_DATA09  0x79
+	// 		MX6UL_PAD_LCD_DATA10__LCDIF_DATA10  0x79
+	// 		MX6UL_PAD_LCD_DATA11__LCDIF_DATA11  0x79
+	// 		MX6UL_PAD_LCD_DATA12__LCDIF_DATA12  0x79
+	// 		MX6UL_PAD_LCD_DATA13__LCDIF_DATA13  0x79
+	// 		MX6UL_PAD_LCD_DATA14__LCDIF_DATA14  0x79
+	// 		MX6UL_PAD_LCD_DATA15__LCDIF_DATA15  0x79
+	// 		MX6UL_PAD_LCD_DATA16__LCDIF_DATA16  0x79
+	// 		MX6UL_PAD_LCD_DATA17__LCDIF_DATA17  0x79
+	// 		MX6UL_PAD_LCD_DATA18__LCDIF_DATA18  0x79
+	// 		MX6UL_PAD_LCD_DATA19__LCDIF_DATA19  0x79
+	// 		MX6UL_PAD_LCD_DATA20__LCDIF_DATA20  0x79
+	// 		MX6UL_PAD_LCD_DATA21__LCDIF_DATA21  0x79
+	// 		MX6UL_PAD_LCD_DATA22__LCDIF_DATA22  0x79
+	// 		MX6UL_PAD_LCD_DATA23__LCDIF_DATA23  0x79
+	// 	>;
+	// };
 
-	pinctrl_lcdif_ctrl: lcdifctrlgrp {
-		fsl,pins = <
-			MX6UL_PAD_LCD_CLK__LCDIF_CLK	    0x79
-			MX6UL_PAD_LCD_ENABLE__LCDIF_ENABLE  0x79
-			MX6UL_PAD_LCD_HSYNC__LCDIF_HSYNC    0x79
-			MX6UL_PAD_LCD_VSYNC__LCDIF_VSYNC    0x79
-			/* used for lcd reset */
-			MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09  0x79
-		>;
-	};
+	// pinctrl_lcdif_ctrl: lcdifctrlgrp {
+	// 	fsl,pins = <
+	// 		MX6UL_PAD_LCD_CLK__LCDIF_CLK	    0x79
+	// 		MX6UL_PAD_LCD_ENABLE__LCDIF_ENABLE  0x79
+	// 		MX6UL_PAD_LCD_HSYNC__LCDIF_HSYNC    0x79
+	// 		MX6UL_PAD_LCD_VSYNC__LCDIF_VSYNC    0x79
+	// 		/* used for lcd reset */
+	// 		MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09  0x79
+	// 	>;
+	// };
 
 	pinctrl_qspi: qspigrp {
 		fsl,pins = <

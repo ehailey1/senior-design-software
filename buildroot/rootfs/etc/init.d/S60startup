@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Start Face Detection Program
+#
+
+case "$1" in
+  start)
+    echo "Starting Face Detection" > /tmp/test
+	python /usr/bin/detect.py &
+    ;;
+  stop)
+    echo "Stopping Face Detection " > /tmp/test
+    skill detect.py
+    ;;
+  restart|reload)
+    "$0" stop
+    "$0" start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit 0
